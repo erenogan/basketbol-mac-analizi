@@ -1,0 +1,21 @@
+# ortam
+.venv/
+__pycache__/
+*.pyc
+
+# model agirliklari (ultralytics ilk kullanimda kendisi indirir)
+*.pt
+
+# videolar: mac kayitlari, depoya girmez
+*.mp4
+*.mov
+*.avi
+
+# uretilen ciktilar (scriptlerle yeniden uretilir)
+out/
+
+# data/: videolar haric (yukarida). Elle hazirlanmis kucuk referanslar
+# (takim_ref_*, tespit_ref_*, kalibrasyon.json, saha.json) bilerek depoda.
+
+# Claude Code ozel baglam (kisisel notlar, depoya girmez)
+CLAUDE.local.md

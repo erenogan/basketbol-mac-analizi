@@ -1,0 +1,802 @@
+[
+{
+"kare": 21,
+"kutu": [
+1279,
+501,
+1308,
+574
+],
+"takim": "kirmizi"
+},
+{
+"kare": 27,
+"kutu": [
+1265,
+499,
+1297,
+573
+],
+"takim": "karisik"
+},
+{
+"kare": 32,
+"kutu": [
+1259,
+499,
+1293,
+574
+],
+"takim": "karisik"
+},
+{
+"kare": 35,
+"kutu": [
+1240,
+484,
+1261,
+550
+],
+"takim": "kirmizi"
+},
+{
+"kare": 51,
+"kutu": [
+1359,
+517,
+1394,
+613
+],
+"takim": "lacivert"
+},
+{
+"kare": 51,
+"kutu": [
+1391,
+514,
+1423,
+592
+],
+"takim": "kirmizi"
+},
+{
+"kare": 68,
+"kutu": [
+1242,
+481,
+1267,
+549
+],
+"takim": "kirmizi"
+},
+{
+"kare": 73,
+"kutu": [
+1242,
+483,
+1265,
+547
+],
+"takim": "kirmizi"
+},
+{
+"kare": 91,
+"kutu": [
+1087,
+506,
+1129,
+582
+],
+"takim": "lacivert"
+},
+{
+"kare": 91,
+"kutu": [
+1341,
+483,
+1367,
+555
+],
+"takim": "kirmizi"
+},
+{
+"kare": 96,
+"kutu": [
+1147,
+498,
+1174,
+555
+],
+"takim": "lacivert"
+},
+{
+"kare": 97,
+"kutu": [
+1187,
+489,
+1217,
+543
+],
+"takim": "kirmizi"
+},
+{
+"kare": 104,
+"kutu": [
+1210,
+530,
+1255,
+634
+],
+"takim": "lacivert"
+},
+{
+"kare": 112,
+"kutu": [
+1458,
+531,
+1496,
+611
+],
+"takim": "kirmizi"
+},
+{
+"kare": 122,
+"kutu": [
+925,
+502,
+958,
+568
+],
+"takim": "kirmizi"
+},
+{
+"kare": 148,
+"kutu": [
+1034,
+479,
+1057,
+537
+],
+"takim": "disarida"
+},
+{
+"kare": 172,
+"kutu": [
+1030,
+479,
+1051,
+537
+],
+"takim": "disarida"
+},
+{
+"kare": 176,
+"kutu": [
+1029,
+479,
+1051,
+538
+],
+"takim": "disarida"
+},
+{
+"kare": 180,
+"kutu": [
+458,
+620,
+580,
+848
+],
+"takim": "disarida"
+},
+{
+"kare": 185,
+"kutu": [
+553,
+519,
+606,
+624
+],
+"takim": "lacivert"
+},
+{
+"kare": 188,
+"kutu": [
+536,
+526,
+594,
+628
+],
+"takim": "lacivert"
+},
+{
+"kare": 189,
+"kutu": [
+786,
+513,
+828,
+599
+],
+"takim": "kirmizi"
+},
+{
+"kare": 196,
+"kutu": [
+879,
+573,
+937,
+719
+],
+"takim": "lacivert"
+},
+{
+"kare": 196,
+"kutu": [
+486,
+498,
+534,
+590
+],
+"takim": "kirmizi"
+},
+{
+"kare": 201,
+"kutu": [
+1125,
+545,
+1191,
+706
+],
+"takim": "kirmizi"
+},
+{
+"kare": 205,
+"kutu": [
+919,
+508,
+963,
+606
+],
+"takim": "lacivert"
+},
+{
+"kare": 214,
+"kutu": [
+478,
+523,
+520,
+625
+],
+"takim": "lacivert"
+},
+{
+"kare": 217,
+"kutu": [
+806,
+577,
+871,
+736
+],
+"takim": "lacivert"
+},
+{
+"kare": 239,
+"kutu": [
+869,
+532,
+918,
+639
+],
+"takim": "lacivert"
+},
+{
+"kare": 243,
+"kutu": [
+713,
+617,
+808,
+808
+],
+"takim": "kirmizi"
+},
+{
+"kare": 251,
+"kutu": [
+647,
+596,
+707,
+738
+],
+"takim": "lacivert"
+},
+{
+"kare": 264,
+"kutu": [
+913,
+492,
+940,
+569
+],
+"takim": "disarida"
+},
+{
+"kare": 267,
+"kutu": [
+813,
+528,
+872,
+638
+],
+"takim": "lacivert"
+},
+{
+"kare": 276,
+"kutu": [
+602,
+603,
+684,
+779
+],
+"takim": "lacivert"
+},
+{
+"kare": 276,
+"kutu": [
+734,
+525,
+807,
+639
+],
+"takim": "lacivert"
+},
+{
+"kare": 279,
+"kutu": [
+601,
+603,
+684,
+779
+],
+"takim": "lacivert"
+},
+{
+"kare": 281,
+"kutu": [
+713,
+605,
+795,
+804
+],
+"takim": "kirmizi"
+},
+{
+"kare": 294,
+"kutu": [
+684,
+510,
+720,
+589
+],
+"takim": "kirmizi"
+},
+{
+"kare": 295,
+"kutu": [
+238,
+539,
+301,
+666
+],
+"takim": "kirmizi"
+},
+{
+"kare": 298,
+"kutu": [
+576,
+527,
+631,
+643
+],
+"takim": "kirmizi"
+},
+{
+"kare": 301,
+"kutu": [
+866,
+539,
+921,
+657
+],
+"takim": "lacivert"
+},
+{
+"kare": 306,
+"kutu": [
+436,
+539,
+489,
+677
+],
+"takim": "lacivert"
+},
+{
+"kare": 314,
+"kutu": [
+799,
+521,
+845,
+594
+],
+"takim": "kirmizi"
+},
+{
+"kare": 321,
+"kutu": [
+725,
+524,
+776,
+617
+],
+"takim": "lacivert"
+},
+{
+"kare": 323,
+"kutu": [
+732,
+527,
+779,
+616
+],
+"takim": "lacivert"
+},
+{
+"kare": 327,
+"kutu": [
+744,
+532,
+789,
+619
+],
+"takim": "lacivert"
+},
+{
+"kare": 333,
+"kutu": [
+702,
+521,
+761,
+621
+],
+"takim": "kirmizi"
+},
+{
+"kare": 343,
+"kutu": [
+887,
+557,
+940,
+704
+],
+"takim": "kirmizi"
+},
+{
+"kare": 346,
+"kutu": [
+622,
+512,
+660,
+588
+],
+"takim": "lacivert"
+},
+{
+"kare": 350,
+"kutu": [
+630,
+512,
+681,
+617
+],
+"takim": "lacivert"
+},
+{
+"kare": 354,
+"kutu": [
+478,
+504,
+515,
+615
+],
+"takim": "lacivert"
+},
+{
+"kare": 397,
+"kutu": [
+572,
+495,
+613,
+586
+],
+"takim": "kirmizi"
+},
+{
+"kare": 404,
+"kutu": [
+660,
+540,
+723,
+647
+],
+"takim": "kirmizi"
+},
+{
+"kare": 415,
+"kutu": [
+903,
+494,
+926,
+571
+],
+"takim": "disarida"
+},
+{
+"kare": 466,
+"kutu": [
+437,
+533,
+488,
+652
+],
+"takim": "kirmizi"
+},
+{
+"kare": 469,
+"kutu": [
+371,
+528,
+427,
+608
+],
+"takim": "lacivert"
+},
+{
+"kare": 470,
+"kutu": [
+851,
+495,
+893,
+571
+],
+"takim": "karisik"
+},
+{
+"kare": 487,
+"kutu": [
+380,
+493,
+431,
+671
+],
+"takim": "kirmizi"
+},
+{
+"kare": 488,
+"kutu": [
+1007,
+540,
+1063,
+649
+],
+"takim": "lacivert"
+},
+{
+"kare": 488,
+"kutu": [
+873,
+491,
+906,
+565
+],
+"takim": "disarida"
+},
+{
+"kare": 488,
+"kutu": [
+423,
+540,
+471,
+616
+],
+"takim": "lacivert"
+},
+{
+"kare": 505,
+"kutu": [
+472,
+579,
+545,
+734
+],
+"takim": "lacivert"
+},
+{
+"kare": 507,
+"kutu": [
+473,
+579,
+545,
+733
+],
+"takim": "lacivert"
+},
+{
+"kare": 511,
+"kutu": [
+350,
+491,
+431,
+681
+],
+"takim": "kirmizi"
+},
+{
+"kare": 528,
+"kutu": [
+990,
+480,
+1010,
+539
+],
+"takim": "disarida"
+},
+{
+"kare": 530,
+"kutu": [
+1047,
+517,
+1091,
+615
+],
+"takim": "kirmizi"
+},
+{
+"kare": 533,
+"kutu": [
+990,
+480,
+1010,
+539
+],
+"takim": "disarida"
+},
+{
+"kare": 540,
+"kutu": [
+949,
+487,
+981,
+556
+],
+"takim": "disarida"
+},
+{
+"kare": 557,
+"kutu": [
+411,
+603,
+493,
+737
+],
+"takim": "lacivert"
+},
+{
+"kare": 558,
+"kutu": [
+459,
+544,
+521,
+679
+],
+"takim": "lacivert"
+},
+{
+"kare": 566,
+"kutu": [
+1105,
+541,
+1148,
+653
+],
+"takim": "kirmizi"
+},
+{
+"kare": 583,
+"kutu": [
+1153,
+538,
+1202,
+646
+],
+"takim": "kirmizi"
+},
+{
+"kare": 595,
+"kutu": [
+1116,
+496,
+1148,
+576
+],
+"takim": "kirmizi"
+},
+{
+"kare": 599,
+"kutu": [
+1176,
+541,
+1221,
+633
+],
+"takim": "kirmizi"
+},
+{
+"kare": 609,
+"kutu": [
+1134,
+495,
+1176,
+576
+],
+"takim": "kirmizi"
+},
+{
+"kare": 610,
+"kutu": [
+652,
+569,
+693,
+644
+],
+"takim": "karisik"
+},
+{
+"kare": 621,
+"kutu": [
+1279,
+531,
+1340,
+628
+],
+"takim": "kirmizi"
+},
+{
+"kare": 626,
+"kutu": [
+745,
+605,
+840,
+778
+],
+"takim": "lacivert"
+},
+{
+"kare": 628,
+"kutu": [
+1187,
+491,
+1220,
+574
+],
+"takim": "kirmizi"
+},
+{
+"kare": 632,
+"kutu": [
+842,
+528,
+888,
+632
+],
+"takim": "lacivert"
+}
+]
