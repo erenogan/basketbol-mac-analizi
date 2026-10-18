@@ -1,7 +1,7 @@
 import argparse, subprocess, sys, time
 from pathlib import Path
 
-# Tum hat tek komutla: tespit/takip -> takim -> iz bolme -> yumusatma -> isi haritasi
+# Tum hat tek komutla: tespit/takip -> takim -> iz bolme -> yumusatma -> mesafe -> isi haritasi
 # (-> videolar). Bir adim hata verirse durur: bozuk ara ciktinin ustune devam etmez.
 # kullanim: python scripts/run_all.py data/dev.mp4 [--etiket x] [--video] [-- 06 secenekleri]
 #   ornek : python scripts/run_all.py data/dev.mp4 --etiket l1920 -- --model yolov8l.pt --imgsz 1920
@@ -23,6 +23,7 @@ if not a.atla_takip:
 adimlar += [("08 takim", ["scripts/08_takim.py", AD]),
             ("10 iz bolme", ["scripts/10_iz_bol.py", AD]),
             ("14 yumusatma", ["scripts/14_yumusat.py", AD]),
+            ("18 mesafe", ["scripts/18_mesafe.py", AD]),
             ("15 isi haritasi", ["scripts/15_isi_haritasi.py", AD])]
 if a.video_ciktilari:
     adimlar += [("11 takim videosu", ["scripts/11_takim_video.py", AD]),

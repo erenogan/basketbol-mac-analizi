@@ -369,6 +369,29 @@ kapanmada olur, sıçrama üretmez). Kalan kesimlerin çoğu uzak kenarda koyu g
 bir kişinin lacivert/takım dışı titremesi (sınıflandırma, takip değil).
 Takım doğruluğu tüm deneylerde %97.
 
+## Takım mesafesi (18_mesafe.py) — ölçüldü
+
+Girdi `izler_saha.json`. Canlı oyun / ölü top ayrı. Asıl ölçü **oyuncu başına m/dk**
+(= mesafe / izlenen oyuncu-dakika): toplam metre eksik tespit yüzünden düşük kalır
+(kare başına ~4.2–4.7/5 oyuncu). Varsayım: izlenemeyen oyuncu da benzer hızda.
+Hız bölgeleri 2/4/6 m/s, hız 1 sn'lik ortalanmış yer değiştirmeden; iz kenarında
+pencere ±3 kareden kısaysa "belirsiz" (önce kare-kare adım×30'a düşüyordu → ölü
+topta kırmızı mesafenin %38'i "sprint" çıkıyordu; hata düzeltildi).
+
+dev (yolo11l + takım kısıtı, 3.1 dk, canlı 2.6 dk):
+```
+            canlı m/dk/oyuncu   ölü top   tam takım tahmini   bölgeler (canlı)
+kırmızı           180              86          2559 m        yürüyüş 34 tempo 31 koşu 17 sprint 6 belirsiz 12
+lacivert          149              53          2077 m        yürüyüş 38 tempo 34 koşu 13 sprint 5 belirsiz 10
+gürültü tabanı: ölü topta medyan hız 0.28 m/s
+```
+**Geçerlilik kontrolü (çıktıda kalıcı):** canlı oyunda yakın (kutu ≥90 px) / uzak
+oyuncu m/dk: kırmızı 169/186, lacivert 141/158 → uzak **~%10–12 yüksek, iki takımda
+aynı** = uzak sahanın çözünürlük gürültüsü mesafeyi bu kadar şişiriyor. Takım farkı
+(~28 m/dk) hem yakında hem uzakta duruyor → gürültü değil gibi; ground truth yok,
+"kanıt" denmeyecek. Literatür ~110–140 m/dk; değerlerimiz üst tarafta → mutlak
+değer değil, **takımlar arası karşılaştırma** olarak sunulmalı.
+
 ## Denendi, elendi
 
 - **COCO `sports ball` ile top tespiti** — 8 farklı imgsz/conf kombinasyonunda
@@ -378,6 +401,11 @@ Takım doğruluğu tüm deneylerde %97.
   görünür" varsayımına dayanıyor. Üniformalı sporda aynı takımın oyuncuları
   görsel olarak ayırt edilemez. ReID en fazla takım ayırt edebilir, oyuncu
   ayırt edemez. (Negatif sonuç, rapora yazılacak.)
+- **Hareket kapısı** (yumuşatmadan önce iz kesme; metre eşiği 0.6 m/kare ve kutu
+  boyuna oranlı eşik) — 1165 kesim, sıçrama 49→71, gerçek hareket kesildi. Kalan
+  ~49 "sıçrama" piksel uzayında normal adımdan ayrışmıyor (adım/kutu boyu medyanı
+  0.057, normalle aynı) → uzak sahanın çözünürlük sınırı, kimlik atlaması değil.
+  Mesafeye etkisi ~%1.5.
 - **new_track_thresh'i düşürmek** (0.45, 0.35; yolo11l ile) — uzak recall +1
   puan, sahte ID +21/+58. yolo11l'e geçiş açığı zaten kapatmıştı.
 - **conf eşiğini yükselterek çöp eleme** — gerçek ama kapalı kalmış oyuncuyu
@@ -426,8 +454,8 @@ bir kapsam kararı; raporda parçalanma oranıyla birlikte gerekçelendirilecek.
 1. ~~**Takım sınıflandırma**~~ — yapıldı, dev test %97. İz bölme denendi, ana
    hatta alınmadı.
 2. ~~**Saha kalibrasyonu**~~ — yapıldı, birini-dışarıda medyan 0.16 m.
-3. ~~**Minimap + yumuşatma + ısı haritası**~~ — yapıldı. Kalan: takım mesafe
-   metriği (ölü top ayrı raporlanmalı), kırmızı köşe lekesinin kontrolü.
+3. ~~**Minimap + yumuşatma + ısı haritası + takım mesafesi**~~ — yapıldı.
+   Kalan: kırmızı köşe lekesinin kontrolü.
 4. **Metrik + rapor** — `final.mp4` (5-8 dk, iki yarı saha da dahil) üzerinde
    son koşu, doğruluk ölçümü, limitasyonlar.
 

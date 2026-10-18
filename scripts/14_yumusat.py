@@ -1,7 +1,8 @@
 import cv2, json, sys, numpy as np
 from collections import defaultdict
 from pathlib import Path
-from scipy.signal import medfilt, savgol_filter
+from scipy.signal import savgol_filter
+from scipy.ndimage import median_filter
 
 # Ayak noktasi -> saha metresi, iz boyunca yumusatma.
 # Kutu alt kenari kareden kareye titriyor (~9 cm) ve ara ara sicriyor (kutu
@@ -9,6 +10,10 @@ from scipy.signal import medfilt, savgol_filter
 #   1) <=MAX_BOSLUK karelik kopmalari dogrusal doldur (isaretli: ara_doldurma)
 #   2) medyan filtre: tek tuk sicramalari siler (durtu gurultusu)
 #   3) Savitzky-Golay: titremeyi alir, donus/hizlanmada duz ortalamadan az kirpar
+# Kalan "sicramalar" (dev'de ~49, >1 m/kare) cogunlukla uzak sahanin cozunurluk
+# siniri: piksel uzayinda normal adimdan ayrismiyor (adim/kutu boyu medyani 0.057,
+# normalle ayni), orada 1 px ~15 cm. Metre veya kutu-boyu esikli "hareket kapisi"
+# denendi: 1165 kesim, sicrama 49->71, gercek hareket kesildi -> elendi.
 # Iz anahtari "iz" (10_iz_bol): takim degisiminde bolunmus iz. "id" ile yumusatsak
 # kimlik rakibe gectiginde iki oyuncunun arasinda hayalet nokta cizilirdi.
 # kullanim: python scripts/14_yumusat.py dev  -> out/dev/izler_saha.json
@@ -39,10 +44,10 @@ def yumusat(xy):
     n = len(xy)
     if n < MEDYAN:
         return xy.copy()
-    out = np.c_[medfilt(xy[:, 0], MEDYAN), medfilt(xy[:, 1], MEDYAN)]
-    # medfilt kenarlari sifirla dolduruyor -> ilk/son yarim pencereyi ham birak
-    y = MEDYAN // 2
-    out[:y], out[-y:] = xy[:y], xy[-y:]
+    # mode="nearest": kenarda pencere tasinca son deger tekrarlanir, kenar kareler de
+    # filtrelenir (scipy.signal.medfilt sifirla dolduruyordu, kenari elle ham
+    # birakmak gerekiyordu; olculen etkisi yok, kod duzeltmesi)
+    out = median_filter(xy, size=(MEDYAN, 1), mode="nearest")
     w = min(SG_PENCERE, tek_tek(n))
     if w > SG_DERECE + 1:
         out = np.c_[savgol_filter(out[:, 0], w, SG_DERECE),
