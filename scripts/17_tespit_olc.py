@@ -13,8 +13,10 @@ def iou(a, b):
     u = (a[2]-a[0])*(a[3]-a[1]) + (b[2]-b[0])*(b[3]-b[1]) - ix*iy
     return ix * iy / u if u else 0
 
-print(f"{'deney':14s} {'model':11s} {'imgsz':>5s} {'ms/kare':>7s} {'ref recall':>11s} "
-      f"{'yakin':>7s} {'uzak':>7s} {'sinirli/10':>10s} {'10/10 kare':>10s} {'ID':>5s}")
+# 3) fazla/kare: takim basina 5'i asan kutu (sahte iz / cift kutu gostergesi)
+# 4) kesim: 10_iz_bol'un takim degisiminde yaptigi kesim (takimlar arasi ID degisimi)
+print(f"{'deney':16s} {'model':11s} {'ms/kare':>7s} {'ref recall':>11s} {'uzak':>5s} "
+      f"{'sinirli/10':>10s} {'10/10':>6s} {'fazla/kare':>10s} {'kesim':>6s} {'ID':>5s}")
 for ad in sys.argv[1:]:
     out = Path("out") / ad
     meta = json.load(open(out / "meta.json")) if (out / "meta.json").exists() else {}
@@ -39,6 +41,12 @@ for ad in sys.argv[1:]:
         kt[k["kare"]][k["takim"]] += 1
     n_kare = max(k["kare"] for k in takim) + 1
     sinirli = np.array([min(kt[f]["kirmizi"], 5) + min(kt[f]["lacivert"], 5) for f in range(n_kare)])
-    print(f"{ad:14s} {meta.get('model', '?'):11s} {meta.get('imgsz', 0):5d} {meta.get('ms_kare', 0):7.1f} "
-          f"{oran('yakin', 'uzak'):>11s} {oran('yakin').split()[-1]:>7s} {oran('uzak').split()[-1]:>7s} "
-          f"{sinirli.mean():10.2f} {(sinirli == 10).mean()*100:9.0f}% {len({k['id'] for k in izler}):5d}")
+    fazla = np.array([max(kt[f]["kirmizi"] - 5, 0) + max(kt[f]["lacivert"] - 5, 0) for f in range(n_kare)])
+    kesim = "-"
+    if (out / "izler_bolunmus.json").exists():
+        b = json.load(open(out / "izler_bolunmus.json"))
+        kesim = str(len({k["iz"] for k in b}) - len({k["id"] for k in b}))
+    print(f"{ad:16s} {meta.get('model', '?'):11s} {meta.get('ms_kare', 0):7.1f} "
+          f"{oran('yakin', 'uzak'):>11s} {oran('uzak').split()[-1]:>5s} "
+          f"{sinirli.mean():10.2f} {(sinirli == 10).mean()*100:5.0f}% {fazla.mean():10.3f} {kesim:>6s} "
+          f"{len({k['id'] for k in izler}):5d}")

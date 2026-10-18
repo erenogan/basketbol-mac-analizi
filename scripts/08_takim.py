@@ -1,23 +1,13 @@
 import cv2, json, sys, numpy as np
 from collections import defaultdict, Counter
 from pathlib import Path
+from ortak import video_yolu
+from takim_renk import govde, oranlar   # piksel kurallari orada (06 takipte de kullaniyor)
 
 # kullanim: python scripts/08_takim.py dev  -> data/dev.mp4, out/dev/izler.json
 AD    = sys.argv[1] if len(sys.argv) > 1 else "smoke"
-from ortak import video_yolu
 VIDEO = video_yolu(AD)
 OUT   = Path("out") / AD
-
-# Piksel kurallari: net izlerden olculdu (OpenCV HSV: H 0-180, S/V 0-255).
-# Kirmizi forma: kirmizi ton + yuksek doygunluk. Ten ve zemin de kirmizi tonda
-# ama S ~84; forma S ~184. Doygunluk esigi teni disarida birakiyor.
-# Lacivert forma: H 100-160, V 30-140, S ~95-150. Siyah kiyafet ayni tonda
-# ama V<30 ve S ~50; parlaklik + doygunluk ayiriyor.
-def kirmizi_maske(H, S, V):
-    return ((H < 2) | (H > 165)) & (S >= 120) & (V >= 60)   # H 2-10 hakemin turuncusu
-
-def lacivert_maske(H, S, V):
-    return (H >= 100) & (H <= 160) & (S >= 70) & (V >= 30) & (V <= 140)
 
 ESIK_KIRMIZI  = 0.25   # govde piksellerinin en az bu kadari forma rengi olmali
 ESIK_LACIVERT = 0.05   # lacivert koyu, kol/golge daha cok yiyor -> daha dusuk
@@ -28,21 +18,10 @@ PENCERE = 15           # iz icinde +-15 kare cogunluk (yarim saniye)
 ETIKET = {0: "kirmizi", 1: "lacivert", -1: "belirsiz", -2: "disarida"}
 
 
-def govde(frame, kutu):
-    # ust %15-%45, ortadaki %50: kafa, bacak, zemin disarida
-    x1, y1, x2, y2 = kutu
-    w, h = x2 - x1, y2 - y1
-    g = frame[max(y1 + int(h * .15), 0):y1 + int(h * .45),
-              max(x1 + int(w * .25), 0):x2 - int(w * .25)]
-    return g if g.size else None
-
-
 def kare_etiketi(g):
-    H, S, V = cv2.cvtColor(g, cv2.COLOR_BGR2HSV).reshape(-1, 3).astype(int).T
-    r = kirmizi_maske(H, S, V).mean()
-    n = lacivert_maske(H, S, V).mean()
+    r, n, koyu = oranlar(g)
     # koyu VE forma kaniti yok: golgedeki lacivert oyuncu da koyu ama n > 0.1
-    if (V < 35).mean() >= ESIK_KOYU and n < ESIK_LACIVERT:
+    if koyu >= ESIK_KOYU and n < ESIK_LACIVERT:
         return -2, r, n
     if r >= ESIK_KIRMIZI and r > n:
         return 0, r, n

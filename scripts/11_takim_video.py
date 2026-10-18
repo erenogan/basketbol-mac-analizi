@@ -1,11 +1,11 @@
 import cv2, json, sys, shutil, subprocess, numpy as np
 from collections import defaultdict, Counter
 from pathlib import Path
+from ortak import video_yolu
 
 # Takim etiketini gozle kontrol etmek icin: kutular kare bazli takim rengiyle.
 # kullanim: python scripts/11_takim_video.py dev
 AD    = sys.argv[1] if len(sys.argv) > 1 else "smoke"
-from ortak import video_yolu
 VIDEO = video_yolu(AD)
 OUT   = Path("out") / AD
 RENK  = {"kirmizi": (40, 40, 230), "lacivert": (230, 120, 20),

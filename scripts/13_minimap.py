@@ -2,13 +2,13 @@ import cv2, json, sys, shutil, subprocess, numpy as np
 from collections import defaultdict, deque
 from pathlib import Path
 from saha_model import cizgiler, POTALAR, UZUN, EN
+from ortak import video_yolu
 
 # Yan yana: solda kamera (takim kutulari + kalibre saha modeli), sagda kusbakisi tahta.
 # Girdi: 14_yumusat ciktisi (izler_saha.json) — yumusatilmis metre koordinati.
 # Tahtada dolu nokta = olcum, ici bos halka = kisa kopmada ara doldurma (tahmin).
 # kullanim: python scripts/13_minimap.py dev
 AD    = sys.argv[1] if len(sys.argv) > 1 else "smoke"
-from ortak import video_yolu
 VIDEO = video_yolu(AD)
 OUT   = Path("out") / AD
 IZ_SN = 1.0                     # tahtada noktanin arkasindaki iz (saniye)

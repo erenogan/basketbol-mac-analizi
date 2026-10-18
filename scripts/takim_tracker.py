@@ -16,8 +16,9 @@ YASAK = 1.0          # iou mesafesi 1 = hic ortusme yok; tum esiklerin ustunde
 
 
 class TakimTracker(BYTETracker):
-    def __init__(self, args):
+    def __init__(self, args, kisit=True):
         super().__init__(args)
+        self.kisit = kisit                            # False: karsilastirma tabani (ayni yol, kisitsiz)
         self.oylar = {}                               # track_id -> deque
 
     def _iz_takimi(self, t):
@@ -28,7 +29,7 @@ class TakimTracker(BYTETracker):
         return takim if n >= 3 else BILINMIYOR       # 3 oydan az: henuz emin degiliz
 
     def _kisitla(self, dists, tracks, detections):
-        if dists.size == 0:
+        if dists.size == 0 or not self.kisit:
             return dists
         tt = np.array([self._iz_takimi(t) for t in tracks])
         dt = np.array([int(d.cls) for d in detections])

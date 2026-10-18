@@ -41,14 +41,25 @@ ve etkisini ölç.
 
 ```
 C:\basket\
-├── data\      smoke.mp4 (20sn), dev.mp4 (3dk), saha.json,
-│              takim_ref_<video>_<set>.json   (mac_tam.mp4 diskte yok)
-├── out\       <video>\ altında: izler.json, izler_takim.json, takip.mp4, ...
-│              (06–09 scriptleri video adını argüman alır: `08_takim.py dev`)
-├── scripts\   01_kare … 07_iz_analiz, 08_takim, 09_referans_pano
+├── data\         smoke.mp4, dev.mp4 (git dışı); saha.json, kalibrasyon.json,
+│                 takim_ref_*.json, tespit_ref_*.json (elle, depoda)
+├── out\          <video>[_<etiket>]\ : izler.json, meta.json, izler_takim.json,
+│                 izler_bolunmus.json, izler_saha.json, isi_haritasi.png, *_izle.mp4
+├── scripts\      06 takip → 08 takım → 10 iz bölme → 14 yumuşatma → 15 ısı haritası
+│                 11 takım videosu, 13 minimap, 12 kalibrasyon, 16/17 tespit ölçümü,
+│                 09 kör referans panosu, run_all.py (tek komut)
+│                 ortak modüller: saha_model, takim_renk, takim_tracker, ortak
+│                 01–05, 07: ilk keşif scriptleri
+├── tracker_ayar\ deney eşikleri (ntt045/035 — elendi)
 ├── bytetrack_ozel.yaml
-└── .venv\
+└── CLAUDE.local.md  özel bağlam (git dışı)
 ```
+
+GitHub: `erenogan/basketbol-mac-analizi` (herkese açık). Commit'lerde Claude
+imzası yok; yazar e-postası depoya özel noreply adresi.
+
+> Not: `scripts/08_kirpinti, 09_oznitelik, 10_kume, 11_etiketle` kullanıcının
+> kendi denemeleri (numaraları çakışıyor, dokunma; `out/smoke/izler.json` okurlar).
 
 `out/`, videolar (`*.mp4`) ve model ağırlıkları (`*.pt`) git'e girmiyor. `data/` altındaki
 elle hazırlanmış JSON referansları (takım/tespit etiketleri, kalibrasyon, saha) **bilerek
@@ -97,14 +108,19 @@ Toplam tespit sayısı anlamsız — 30'un 20'si zaten kulübede oturan insanlar
 ## Seçilen ayarlar (hepsi ölçümle)
 
 ```python
-model  = "yolov8m.pt"
+model  = "yolo11l.pt"   # 2026-10-18: yolov8m'den geçildi (aşağıda "Optimizasyon turu")
 imgsz  = 1280
-conf   = 0.05      # modele düşük ver, eleme takipçide
+half   = True           # fp16: döngü ~40 -> ~23-27 ms/kare, doğruluk aynı
+conf   = 0.05           # modele düşük ver, eleme takipçide
 iou    = 0.50
-classes = [0]      # COCO person
-tracker = "bytetrack_ozel.yaml"
+classes = [0]           # COCO person
+tracker = "bytetrack_ozel.yaml" + takım kısıtı (scripts/takim_tracker.py)
 filtre  = saha poligonu + ayak noktası testi (data/saha.json)
 ```
+
+Tek komut: `python scripts/run_all.py data/dev.mp4 [--video] [--etiket x -- <06 seçenekleri>]`
+(06 → 08 → 10 → 14 → 15 [→ 11 → 13]; hata veren adımda durur). Deney çıktıları
+`out/<video>_<etiket>/`, her koşunun ayarları `meta.json`'da.
 
 `bytetrack_ozel.yaml`:
 
@@ -302,6 +318,57 @@ olabilir, kontrol edilmedi.
 
 ---
 
+## Optimizasyon turu (2026-10-18) — ölçüldü
+
+**Hız.** Profil: model+takip 36 ms, mp4 yazma + ffmpeg ~13 ms/kare, kütüphane
+yükleme ~12 sn sabit. fp16 + 06'da video yazmayı isteğe bağlı yapmak (`--video-yaz`)
+→ döngü 23 ms/kare (v8m). fp16 doğrulandı: smoke'ta 36→37 ID, takım doğruluğu aynı.
+Tüm hat dev'de 148 sn (önce ~15 dk, ama o ölçümde GPU paylaşılıyordu).
+Ders: ölçüm yaparken başka iş paralel çalışmasın.
+
+**Tespit referansı** (`data/tespit_ref_dev.json`, `16_tespit_referans.py`): dev'den
+ölü top dışı 16 kare, 128 **kesin** oyuncu kutusu (yolo11x+v8x@1920 adaylarından,
+gözle). Kalabalık uzak kümelerde belirsizler hariç → kolay örneğe yanlı.
+Ölçüm `17_tespit_olc.py`: ref recall (yakın/uzak), tüm videoda sınırlı oyuncu
+min(k,5)+min(l,5), fazla kutu/kare, takımlar arası kesim, ID.
+
+**Model / imgsz** (hepsi fp16, ms/kare dev döngüsü):
+```
+                 ms    ref   uzak  oyuncu/10
+v8m  1280       21.5   %87   %77   8.21
+v8m  1920       38.4   %88   %79   8.43
+v8l  1280       32.4   %87   %77   8.35
+11l  1280       25.8   %88   %80   8.48   <- seçildi (maliyet/fayda)
+11x  1280       41.6   %89   %81   8.54
+11l  1920       48.6   %89   %80   8.61
+```
+Fark küçük (128'de en fazla 3 oyuncu). Uzak oyuncuların ham tespiti ≥0.08'de %89
+(v8m) ama izlerde %77: kayıp takipçide. v8m'de uzak oyuncunun ≥0.55 (new_track)
+oranı %70, 11l'de %81 → 11l açığı kendiliğinden kapattı.
+
+**new_track_thresh** 0.45 / 0.35 (11l): uzak %80→%81, +21/+58 ID → **0.55 kaldı**.
+
+**Takım kısıtlı takip** (`takim_tracker.py`): BYTETracker alt sınıfı; tespitin
+güçlü takım etiketi (`takim_renk.guclu_takim`: kırmızı / lacivert / takım dışı /
+bilinmiyor) `cls` alanında; izin takımı son 30 güçlü etiketin çoğunluğu (≥3 oy);
+çelişen çift maliyeti 1 (eşleşmez), birinci ve ikinci turda. Taban aynı yoldan
+kısıt kapalı (`--kisitsiz`) — predict+BYTETracker yolu model.track ile aynı
+eşleşme kararlarını veriyor (koordinatlarda %1.8 kayıtta ≤22 px fark, kaynağı
+ultralytics iç detayı, eşleşmeye etkisi yok).
+```
+                  kesim  fazla/kare  ID   ref/uzak/oyuncu
+taban (11l)        211     0.160    141   %88/%80/8.48
+kırmızı/lacivert   129     0.131    189   %88/%80/8.46
++ takım dışı       104     0.123    226   %88/%80/8.43   <- varsayılan
+```
+Gözle 10'ar rastgele kesim: oyuncu→rakip oyuncu geçişi taban 4/10, iki sınıf 1/10,
+üç sınıf 1/10 (+2 belirsiz); hakeme geçiş iki sınıfta 2/10, üç sınıfta 0/10.
+Kaba tahmin: oyuncu→rakip ~85 → ~10–30 (3 dk). Bedel: ID artıyor (iz kopuyor) —
+takım metriklerini etkilemiyor. Sıçrama/mesafe değişmedi (beklenen: geçiş
+kapanmada olur, sıçrama üretmez). Kalan kesimlerin çoğu uzak kenarda koyu giyimli
+bir kişinin lacivert/takım dışı titremesi (sınıflandırma, takip değil).
+Takım doğruluğu tüm deneylerde %97.
+
 ## Denendi, elendi
 
 - **COCO `sports ball` ile top tespiti** — 8 farklı imgsz/conf kombinasyonunda
@@ -311,6 +378,8 @@ olabilir, kontrol edilmedi.
   görünür" varsayımına dayanıyor. Üniformalı sporda aynı takımın oyuncuları
   görsel olarak ayırt edilemez. ReID en fazla takım ayırt edebilir, oyuncu
   ayırt edemez. (Negatif sonuç, rapora yazılacak.)
+- **new_track_thresh'i düşürmek** (0.45, 0.35; yolo11l ile) — uzak recall +1
+  puan, sahte ID +21/+58. yolo11l'e geçiş açığı zaten kapatmıştı.
 - **conf eşiğini yükselterek çöp eleme** — gerçek ama kapalı kalmış oyuncuyu
   (conf 0.38) da atıyor. Eleme takipçiye bırakıldı.
 

@@ -5,6 +5,7 @@ from collections import defaultdict
 
 import sys
 from pathlib import Path
+from ortak import video_yolu
 # kullanim: python scripts/09_referans_pano.py dev 2
 AD   = sys.argv[1] if len(sys.argv) > 1 else "smoke"
 SEED = int(sys.argv[2]) if len(sys.argv) > 2 else 0
@@ -17,7 +18,6 @@ for j, i in enumerate(sec):
     by[kayit[i]["kare"]].append((j, i))
 
 hucre = {}
-from ortak import video_yolu
 cap = cv2.VideoCapture(video_yolu(AD)); kare = 0
 while True:
     ok, f = cap.read()

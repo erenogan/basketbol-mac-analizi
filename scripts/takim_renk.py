@@ -31,14 +31,17 @@ def oranlar(g):
 # Esikler 08'in siniflandirma esiklerinden siki: yanlis engel = kopan iz.
 GUCLU_KIRMIZI = (0.35, 0.05)    # kirmizi >= 0.35 ve lacivert < 0.05
 GUCLU_LACIVERT = (0.15, 0.15)   # lacivert >= 0.15 ve kirmizi < 0.15
-BILINMIYOR = 2
+GUCLU_DISARIDA = (0.25, 0.05)   # koyu (V<35) >= 0.25 ve lacivert < 0.05: hakem / siyah giyen
+DISARIDA, BILINMIYOR = 2, 3
 
 
 def guclu_takim(frame, kutu):
     g = govde(frame, kutu)
     if g is None:
         return BILINMIYOR
-    r, n, _ = oranlar(g)
+    r, n, koyu = oranlar(g)
+    if koyu >= GUCLU_DISARIDA[0] and n < GUCLU_DISARIDA[1]:
+        return DISARIDA
     if r >= GUCLU_KIRMIZI[0] and n < GUCLU_KIRMIZI[1]:
         return 0
     if n >= GUCLU_LACIVERT[0] and r < GUCLU_LACIVERT[1]:
