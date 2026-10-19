@@ -1,8 +1,9 @@
 # Sınırlar ve doğruluk
 
 Bu belge, sistemin ne ölçtüğünü, ne kadar doğru ölçtüğünü ve neyi ölçemediğini anlatır.
-Buradaki sayılar 3 dakikalık bir geliştirme klibinden (`dev.mp4`) ölçüldü. Son değerler
-5–8 dakikalık sunum klibinde yeniden ölçülecek.
+Buradaki sayılar maçın ikinci devresinden alınan 7 dakikalık sunum klibinde (`final.mp4`)
+ölçüldü. Sistemin bütün ayarları maçın birinci devresinden başka bir klipte yapıldı; sunum
+klibine hiç ayar yapılmadı. Yani sayılar, sistemin daha önce görmediği görüntüdeki başarısı.
 
 Bütün doğruluk sayıları, görüntüye bakılarak elle hazırlanmış referanslara karşı ölçüldü.
 Referanslar etiketlenirken sistemin tahmini gösterilmedi.
@@ -20,9 +21,9 @@ Referanslar etiketlenirken sistemin tahmini gösterilmedi.
 
 | Ne | Değer | Nasıl ölçüldü |
 |---|---|---|
-| Takım ayrımı (kırmızı / lacivert / takım dışı) | %97 | 78 rastgele oyuncu kutusu, elle etiketlendi |
-| Oyuncu bulma, kameraya yakın saha | %98 | 16 karede 58 oyuncu |
-| Oyuncu bulma, uzak saha | %80 | 16 karede 70 oyuncu |
+| Takım ayrımı (kırmızı / lacivert / takım dışı) | %93 (yakın saha %100, uzak %89) | 73 rastgele oyuncu kutusu, elle etiketlendi |
+| Oyuncu bulma, kameraya yakın saha | %97 | 16 karede 30 oyuncu |
+| Oyuncu bulma, uzak saha | %81 | 16 karede 74 oyuncu |
 | Saha üzerindeki konum hatası | medyan 0.16 m, en kötü 0.73 m | 15 bilinen saha noktası |
 
 ## Sistemin yapamadıkları
@@ -47,17 +48,19 @@ uzak sahada 15 cm ediyor. Konum hatası yakında birkaç santimetre, uzakta 0.5�
 
 **Koşu mesafesi mutlak değil, karşılaştırmalı okunmalı.** Uzak sahadaki konum oynamaları
 mesafeye ekleniyor: aynı sistemde uzaktaki oyuncular yakındakilerden yaklaşık %10 daha hızlı
-görünüyor ve bu fark iki takımda da aynı. Bulunan değerler (oyuncu başına dakikada 150–180 m)
+görünüyor ve bu fark iki takımda da aynı. Bulunan değerler (oyuncu başına dakikada 160–170 m)
 basketbol literatüründeki değerlerin üst sınırında. "Kırmızı takım laciverden fazla koştu"
 güvenle söylenebilir; "kırmızı takım 2.559 m koştu" kesin bir ölçüm değildir.
 
 **Kenardaki kişiler.** Saha kenarında duran yedek oyuncular ve antrenörler bazen sahadaki
-oyuncu sanılabiliyor. Bir takıma kare başına ortalama 0.12 fazladan kişi düşüyor.
+oyuncu sanılabiliyor. Bir takıma kare başına ortalama 0.2 fazladan kişi düşüyor.
 Hakemler ve siyah giyen kişiler büyük ölçüde doğru ayıklanıyor.
 
 **Ölü top tahmini.** Top görülmediği için oyunun durduğu anlar, bütün oyuncuların aynı anda
-yavaşlamasından çıkarılıyor. Geliştirme klibinde bir mola ve bir serbest atış doğru bulundu.
-Yavaş tempolu bir set hücumu da yanlışlıkla ölü top sayılabilir.
+yavaşlamasından çıkarılıyor. Sunum klibinde 12 aralık, toplam 2 dakika ölü top sayıldı. Gözle
+bakılınca yarısı kesin ölü top (serbest atışlar, sakatlık duraklaması); kalanların bir kısmı
+yavaş tempolu set hücumu olabilir. Bu yüzden "canlı oyun" metrikleri bir miktar yavaş oyunu
+dışarıda bırakıyor olabilir.
 
 **Takım renkleri bu maça göre ayarlı.** Renk kuralları bu salonun ışığına ve bu iki takımın
 formalarına göre ölçüldü. Başka bir maçta, farklı formalarla ya da farklı bir salonda yeniden

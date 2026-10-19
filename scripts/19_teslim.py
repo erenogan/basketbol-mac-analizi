@@ -15,13 +15,14 @@ HEDEF = OUT / "teslim"
 HEDEF.mkdir(exist_ok=True)
 FPS = 30.0
 
-# Olculen dogruluk degerleri (bkz. CLAUDE.md). final.mp4 olculunce guncellenir.
+# Olculen dogruluk (bkz. CLAUDE.md). final.mp4: kurallar ona hic dokunmadan olculdu.
 OLCUM = {
-    "takim_dogrulugu": {"deger": 0.97, "kaynak": "dev.mp4, kor referans, 78 tespit"},
+    "takim_dogrulugu": {"deger": 0.93, "yakin_saha": 1.00, "uzak_saha": 0.89,
+                        "kaynak": "final.mp4 (2. devre), kor referans, 73 tespit"},
     "konum_hatasi_m": {"medyan": 0.16, "en_kotu": 0.73,
                        "kaynak": "15 noktali kalibrasyon, birini-disarida"},
-    "oyuncu_bulunma": {"yakin_saha": 0.98, "uzak_saha": 0.80,
-                       "kaynak": "dev.mp4, 16 kare, 128 kesin oyuncu"},
+    "oyuncu_bulunma": {"yakin_saha": 0.97, "uzak_saha": 0.81,
+                       "kaynak": "final.mp4, 16 kare, 104 kesin oyuncu"},
 }
 
 kayit = json.load(open(OUT / "izler_saha.json"))

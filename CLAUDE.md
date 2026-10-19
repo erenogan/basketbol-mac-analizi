@@ -392,6 +392,34 @@ aynı** = uzak sahanın çözünürlük gürültüsü mesafeyi bu kadar şişiri
 "kanıt" denmeyecek. Literatür ~110–140 m/dk; değerlerimiz üst tarafta → mutlak
 değer değil, **takımlar arası karşılaştırma** olarak sunulmalı.
 
+## Final ölçümü (final.mp4) — raporlanacak sayılar
+
+Seçim `final_sec.py` (tam maçtan puanlayarak): 1:05:15–1:12:15, 2. devre,
+`data/final_sec.json`'da gerekçesiyle. dev maçta 10:42–13:46 (1. devre).
+Kalibrasyon final'de de oturuyor (kamera tüm maç boyunca kaymadı, <1 px).
+Kurallara final üzerinde **hiç dokunulmadı**.
+
+```
+                       dev (ayar)     final (genelleme)
+takım doğruluğu          %97           %93   (yakın %100, uzak %89; 73 tespit)
+oyuncu bulma yakın       %98           %97   (16 kare, 104 kesin oyuncu)
+oyuncu bulma uzak        %80           %81
+fazla kutu/kare          0.12          0.20
+takımlar arası kesim     104 (3 dk)    236 (7 dk) ≈ aynı oran
+canlı m/dk/oyuncu        180/149       166/163 (kırmızı/lacivert)
+uzak/yakın m/dk          1.10/1.12     1.11/1.30
+ölü top                  2 aralık      12 aralık, 123 sn / 420 sn
+```
+- Takım: uzak sahada düşüş (%97→%89) — 2. devrede takımlar saha değiştirdi,
+  ışık/açı farklı. Hatalar lacivert→takım dışı (koyu) ve lacivert→kırmızı.
+- Ölü top: 12 aralığın ~6'sı gözle kesin (serbest atış dizilişi, sakatlık),
+  kalanı yavaş set hücumu olabilir → "canlı oyun" biraz eksik kapsıyor.
+- Lacivert uzak/yakın 1.30: uzak sahada laciverde gürültü daha fazla şişirme
+  yapıyor; takımlar arası mesafe farkı final'de kayboldu (166 vs 163).
+  Mesafe karşılaştırması bu yüzden **zayıf kanıt**.
+- Teslim paketi: `out/final/teslim/` (tracked.mp4, tracks.json/csv, ozet, ısı
+  haritası, LIMITASYONLAR).
+
 ## Denendi, elendi
 
 - **COCO `sports ball` ile top tespiti** — 8 farklı imgsz/conf kombinasyonunda
@@ -463,8 +491,8 @@ bir kapsam kararı; raporda parçalanma oranıyla birlikte gerekçelendirilecek.
 2. ~~**Saha kalibrasyonu**~~ — yapıldı, birini-dışarıda medyan 0.16 m.
 3. ~~**Minimap + yumuşatma + ısı haritası + takım mesafesi**~~ — yapıldı.
    Kalan: kırmızı köşe lekesinin kontrolü.
-4. **Metrik + rapor** — `final.mp4` (5-8 dk, iki yarı saha da dahil) üzerinde
-   son koşu, doğruluk ölçümü, limitasyonlar.
+4. ~~**Metrik + rapor**~~ — final.mp4 seçildi, ölçüldü, teslim paketi hazır.
+   Kalan: hocaya sunum (ilerleme sayfası / rapor).
 
 > `final.mp4` seçilirken iki yarı saha da dahil edilecek. Geliştirme yakın yarı
 > sahada yapıldı (oyuncular büyük), ama ölçüm kolay senaryoda yapılırsa sahte
