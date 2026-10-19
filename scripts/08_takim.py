@@ -2,32 +2,17 @@ import cv2, json, sys, numpy as np
 from collections import defaultdict, Counter
 from pathlib import Path
 from ortak import video_yolu
-from takim_renk import govde, oranlar   # piksel kurallari orada (06 takipte de kullaniyor)
+from takim_renk import govde, kare_etiketi   # kurallar orada (06 takip, final_sec de kullaniyor)
 
 # kullanim: python scripts/08_takim.py dev  -> data/dev.mp4, out/dev/izler.json
 AD    = sys.argv[1] if len(sys.argv) > 1 else "smoke"
 VIDEO = video_yolu(AD)
 OUT   = Path("out") / AD
 
-ESIK_KIRMIZI  = 0.25   # govde piksellerinin en az bu kadari forma rengi olmali
-ESIK_LACIVERT = 0.05   # lacivert koyu, kol/golge daha cok yiyor -> daha dusuk
-ESIK_KOYU     = 0.25   # V<35 orani: oyuncuda p90 ~0.05-0.09, siyah giyende medyan 0.50
 PENCERE = 15           # iz icinde +-15 kare cogunluk (yarim saniye)
 # -1 "belirsiz": forma kaniti yok (yandan gorunum) -> komsu karelerden doldurulur
 # -2 "disarida" : kanit var, takim degil (koyu kiyafet) -> doldurulmaz, oy vermez
 ETIKET = {0: "kirmizi", 1: "lacivert", -1: "belirsiz", -2: "disarida"}
-
-
-def kare_etiketi(g):
-    r, n, koyu = oranlar(g)
-    # koyu VE forma kaniti yok: golgedeki lacivert oyuncu da koyu ama n > 0.1
-    if koyu >= ESIK_KOYU and n < ESIK_LACIVERT:
-        return -2, r, n
-    if r >= ESIK_KIRMIZI and r > n:
-        return 0, r, n
-    if n >= ESIK_LACIVERT and n > r:
-        return 1, r, n
-    return -1, r, n
 
 
 kayit = json.load(open(OUT / "izler.json"))

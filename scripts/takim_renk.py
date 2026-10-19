@@ -27,6 +27,25 @@ def oranlar(g):
     return kirmizi_maske(H, S, V).mean(), lacivert_maske(H, S, V).mean(), (V < 35).mean()
 
 
+# Kare bazli siniflandirma (08_takim, final_sec). Doner: (etiket, r, n)
+#  0 kirmizi, 1 lacivert, -1 belirsiz (forma kaniti yok), -2 disarida (koyu, forma yok)
+ESIK_KIRMIZI  = 0.25   # govde piksellerinin en az bu kadari forma rengi olmali
+ESIK_LACIVERT = 0.05   # lacivert koyu, kol/golge daha cok yiyor -> daha dusuk
+ESIK_KOYU     = 0.25   # V<35 orani: oyuncuda p90 ~0.05-0.09, siyah giyende medyan 0.50
+
+
+def kare_etiketi(g):
+    r, n, koyu = oranlar(g)
+    # koyu VE forma kaniti yok: golgedeki lacivert oyuncu da koyu ama n > 0.1
+    if koyu >= ESIK_KOYU and n < ESIK_LACIVERT:
+        return -2, r, n
+    if r >= ESIK_KIRMIZI and r > n:
+        return 0, r, n
+    if n >= ESIK_LACIVERT and n > r:
+        return 1, r, n
+    return -1, r, n
+
+
 # Takipte kullanilan "guclu" etiket: sadece cok emin olunan tespit eslesmeyi engeller.
 # Esikler 08'in siniflandirma esiklerinden siki: yanlis engel = kopan iz.
 GUCLU_KIRMIZI = (0.35, 0.05)    # kirmizi >= 0.35 ve lacivert < 0.05
