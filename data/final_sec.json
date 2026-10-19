@@ -1,0 +1,84 @@
+{
+ "video": "data/t\u00fcm_mac.mp4",
+ "baslangic_sn": 3915.0,
+ "sure_sn": 420,
+ "secim": {
+  "bas": 3915.0,
+  "puan": 0.863989343989344,
+  "oyun": 0.680952380952381,
+  "sol": 0.5104895104895105,
+  "yari": 0.4895104895104895,
+  "olu_sn": 13,
+  "kamera_px": 0.7922298933319394,
+  "cakisma": false,
+  "gecer": true
+ },
+ "secim_nedeni": "1. aday (0:37:30, puan 0.87) ile fark 0.01, olcum gurultusu seviyesinde. Kurallar dev'de (1. devre, 10:42) ayarlandi; 2. devre (takimlar saha degistirmis, onde izleyici) daha durust genelleme testi.",
+ "ilk_5": [
+  {
+   "bas": 2250.0,
+   "puan": 0.867218045112782,
+   "oyun": 0.6785714285714286,
+   "sol": 0.5052631578947369,
+   "yari": 0.49473684210526314,
+   "olu_sn": 10,
+   "kamera_px": 0.37035395991596803,
+   "cakisma": false,
+   "gecer": true
+  },
+  {
+   "bas": 2265.0,
+   "puan": 0.865952380952381,
+   "oyun": 0.6857142857142857,
+   "sol": 0.5104166666666666,
+   "yari": 0.48958333333333337,
+   "olu_sn": 10,
+   "kamera_px": 0.37035395991596803,
+   "cakisma": false,
+   "gecer": true
+  },
+  {
+   "bas": 3915.0,
+   "puan": 0.863989343989344,
+   "oyun": 0.680952380952381,
+   "sol": 0.5104895104895105,
+   "yari": 0.4895104895104895,
+   "olu_sn": 13,
+   "kamera_px": 0.7922298933319394,
+   "cakisma": false,
+   "gecer": true
+  },
+  {
+   "bas": 3930.0,
+   "puan": 0.8572239108409321,
+   "oyun": 0.6714285714285714,
+   "sol": 0.4858156028368794,
+   "yari": 0.4858156028368794,
+   "olu_sn": 13,
+   "kamera_px": 0.7922298933319394,
+   "cakisma": false,
+   "gecer": true
+  },
+  {
+   "bas": 2295.0,
+   "puan": 0.8561064425770308,
+   "oyun": 0.6476190476190476,
+   "sol": 0.5036764705882353,
+   "yari": 0.4963235294117647,
+   "olu_sn": 10,
+   "kamera_px": 0.37035395991596803,
+   "cakisma": false,
+   "gecer": true
+  }
+ ],
+ "cakisma_araliklari": [
+  [
+   642.0,
+   826.0
+  ],
+  [
+   1117.0,
+   1138.0
+  ]
+ ]
+}

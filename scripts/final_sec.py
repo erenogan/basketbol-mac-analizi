@@ -5,7 +5,7 @@ import imageio_ffmpeg
 from scipy.optimize import linear_sum_assignment
 from takim_renk import govde, kare_etiketi
 
-# Tam mactan final.mp4 secimi: anahtar kareleri (~1/sn) tarar, her pencereyi puanlar,
+# Tam mactan final.mp4 secimi: saniyede 1 kare orneklenir, her pencereyi puanlar,
 # en iyisini keser. Tum hat tam macta calismaz; sadece hafif tarama (CLAUDE.md kurali).
 # Kriterler (final.mp4'ten ne istedigimiz):
 #   - gercek mac oynaniyor   : sahada 7-12 takim oyuncusu, iki takimdan da >=2 (isinma /
@@ -27,6 +27,8 @@ ap.add_argument("--cikti", default="data/final.mp4")
 ap.add_argument("--kes", action="store_true", help="secilen pencereyi cikti dosyasina kes")
 ap.add_argument("--yeniden-tara", action="store_true", help="onbellegi yok say")
 ap.add_argument("--model", default="yolo11l.pt")
+ap.add_argument("--baslangic", type=float, help="puanlamanin 1.'si yerine bu pencere (sn); --neden ile")
+ap.add_argument("--neden", default="", help="elle secimin gerekcesi (final_sec.json'a yazilir)")
 a = ap.parse_args()
 
 EXE = imageio_ffmpeg.get_ffmpeg_exe()
@@ -37,11 +39,12 @@ saha = np.array(json.load(open("data/saha.json"))["saha"], dtype=np.int32)
 Hm = np.array(json.load(open("data/kalibrasyon.json"))["H_piksel_saha"])
 
 
-def anahtar_tara(video, w, h, isle):
-    """Sadece anahtar kareleri cozer (hizli), her kare icin isle(i, kare) cagirir.
-    Doner: kare zamanlari (sn)."""
-    p = subprocess.Popen([EXE, "-hide_banner", "-skip_frame", "nokey", "-i", video,
-                          "-vf", f"scale={w}:{h},showinfo", "-vsync", "vfr", "-an",
+def ornek_tara(video, w, h, isle, hiz=1):
+    """Saniyede `hiz` kare ornekler, her kare icin isle(i, kare) cagirir; doner: zamanlar (sn).
+    Anahtar kare atlama kullanilmiyor: anahtar kare araligi dosyaya bagli (dev.mp4 ~1 sn,
+    tam mac 5.61 sn) -> ornekleme hizi kodlamaya bagli kaliyordu. Tam cozum 2 saatte ~2 dk."""
+    p = subprocess.Popen([EXE, "-hide_banner", "-i", video,
+                          "-vf", f"fps={hiz},scale={w}:{h},showinfo", "-an",
                           "-f", "rawvideo", "-pix_fmt", "bgr24", "-"],
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     pts = []
@@ -115,22 +118,23 @@ else:
         ornek.append({"nk": int(nk), "nl": int(nl), "konum": konum, "iz": kucuk(kare).tolist(),
                       "kayma": kayma})
         if i % 600 == 0:
-            print(f"  {i} anahtar kare  ({time.perf_counter() - t0:.0f} sn)")
-    pts = anahtar_tara(a.video, W, H, isle)
+            print(f"  {i} ornek  ({time.perf_counter() - t0:.0f} sn)")
+    pts = ornek_tara(a.video, W, H, isle)
     tarama = {"video": a.video, "pts": pts, "ornek": ornek}
     TARAMA.parent.mkdir(exist_ok=True)
     TARAMA.write_text(json.dumps(tarama))
-    print(f"tarama: {len(pts)} anahtar kare, {time.perf_counter() - t0:.0f} sn -> {TARAMA}")
+    print(f"tarama: {len(pts)} ornek, {time.perf_counter() - t0:.0f} sn -> {TARAMA}")
 
 # haric klipler her seferinde (ucuz, 320x180): --haric degisirse onbellek bayatlamaz
 haric = {}
 for v in a.haric:
     if Path(v).exists():
         _iz = []
-        _pts = anahtar_tara(v, 320, 180, lambda i, k: _iz.append(kucuk(k).tolist()))
+        _pts = ornek_tara(v, 320, 180, lambda i, k: _iz.append(kucuk(k).tolist()))
         haric[v] = {"pts": _pts, "iz": _iz}
 
 pts = np.array(tarama["pts"]); ornek = tarama["ornek"]; T = float(pts[-1]) if len(pts) else 0
+ORNEK_HIZI = len(pts) / T if T else 1.0
 nk = np.array([o["nk"] for o in ornek]); nl = np.array([o["nl"] for o in ornek])
 oyun = (nk >= 2) & (nl >= 2) & (nk + nl >= 7) & (nk + nl <= 12)
 ort_x = np.array([np.mean([p[0] for p in o["konum"]]) if o["konum"] else np.nan for o in ornek])
@@ -152,26 +156,37 @@ for i in range(1, len(ornek)):
 izler = np.array([o["iz"] for o in ornek], np.float32)
 cakisma = []
 for v, h in haric.items():
-    farklar = []
+    # Zamanlama tutarliligi: klip mactan kesildiyse her karesinin mactaki en yakin ani
+    # ayni sabit kaymayi verir. Tek kare benzerlik esigi yetmiyor: kamera sabit, iz
+    # hep ayni salon; 0.5 sn ornek kaymasinda oran testi karelerin %28'inde tutuyordu.
+    # Olculdu (dev'de): gercek parca %71-88 tutarli, icinde olmayan klip %14 -> esik %40.
+    kayma = []
     for t_klip, iz in zip(h["pts"], h["iz"]):
-        mse = ((izler - np.array(iz, np.float32)) ** 2).mean(axis=(1, 2))
-        j = int(mse.argmin())
-        # oran testi: en iyi eslesme tipik farktan cok daha iyi mi? Olculdu (dev):
-        # ayni sahne oran <= 0.035, farkli sahne >= 0.38 -> esik 0.15
-        if mse[j] < 0.15 * np.median(mse):
-            farklar.append(pts[j] - t_klip)
-    if len(farklar) >= len(h["pts"]) * 0.5 and np.std(farklar) < 3:
-        bas = float(np.median(farklar)); son = bas + h["pts"][-1]
-        cakisma.append((bas, son)); print(f"{v}: macta {bas:.0f}-{son:.0f} sn ({len(farklar)}/{len(h['pts'])} eslesme)")
+        j = int(((izler - np.array(iz, np.float32)) ** 2).mean(axis=(1, 2)).argmin())
+        kayma.append(round(pts[j] - t_klip))
+    kayma = np.array(kayma)
+    degerler, sayi = np.unique(kayma, return_counts=True)
+    mod = int(degerler[sayi.argmax()]); tutarli = np.mean(np.abs(kayma - mod) <= 1)
+    # %25-40 belirsiz: yine de dislanir. Yanlis dislama ~klip suresi kadar aday kaybettirir;
+    # yanlis dahil etme final'i ayar yapilan goruntuyle cakistirir -> bedeller esit degil.
+    if tutarli >= 0.25:
+        bas, son = float(mod), float(mod + h["pts"][-1])
+        cakisma.append((bas, son))
+        durum = "bulundu" if tutarli >= 0.4 else "OLASI (belirsiz, ihtiyaten dislandi)"
+        print(f"{v}: macta {bas:.0f}-{son:.0f} sn, {durum} (karelerin %{tutarli * 100:.0f}'i tutarli)")
     else:
-        print(f"{v}: macta bulunamadi ({len(farklar)}/{len(h['pts'])} eslesme) - farkli kayit olabilir")
+        print(f"{v}: macta bulunamadi (tutarli kare %{tutarli * 100:.0f}) - farkli kayit olabilir")
 
+# "mac oynaniyor" kapisi: tarama ayarlarinda (1280, conf 0.25) kesin mac oynanan dev
+# araliginda bile oran %70 (ust uste binme, uzak saha kaybi). Devre arasi %0-16.
+# Ilk surumdeki %80 olculmemisti ve 455 pencerenin 453'unu eliyordu.
+OYUN_KAPI = 0.6
 kontrol = [(pts[i], o["kayma"]) for i, o in enumerate(ornek) if o["kayma"] is not None]
 
 # ---------- 4) pencere puanlama ----------
 def puanla(bas):
     m = (pts >= bas) & (pts < bas + a.sure)
-    if m.sum() < a.sure * 0.5:
+    if m.sum() < a.sure * ORNEK_HIZI * 0.5:              # yeterli ornek yok (video sonu vb.)
         return None
     oy = oyun[m].mean()
     x = ort_x[m & oyun]
@@ -185,14 +200,14 @@ def puanla(bas):
     yakin = [k for t, k in kontrol if bas - 60 <= t <= bas + a.sure + 60]
     kamera = max(yakin) if yakin else 0.0
     cak = any(bas < s + 30 and bas + a.sure > b - 30 for b, s in cakisma)
-    kapi = oy >= 0.8 and yari >= 0.2 and kamera < 3 and not cak
+    kapi = oy >= OYUN_KAPI and yari >= 0.2 and kamera < 3 and not cak
     puan = 0.4 * oy + 0.4 * min(yari / 0.5, 1) + 0.2 * olu
     return dict(bas=bas, puan=puan, oyun=oy, sol=sol, yari=yari, olu_sn=en_uzun,
                 kamera_px=kamera, cakisma=cak, gecer=kapi)
 
 pencereler = [p for b in np.arange(0, max(T - a.sure, 0) + 1, a.adim) if (p := puanla(float(b)))]
 gecen = sorted([p for p in pencereler if p["gecer"]], key=lambda p: -p["puan"])
-print(f"\nmac {T / 60:.0f} dk | oyun oynanan anahtar kare %{oyun.mean() * 100:.0f} | "
+print(f"\nmac {T / 60:.0f} dk | oyun oynanan ornek %{oyun.mean() * 100:.0f} | "
       f"{len(pencereler)} pencere, {len(gecen)} kapidan gecti")
 def zaman(s):
     return f"{int(s // 3600)}:{int(s % 3600 // 60):02d}:{int(s % 60):02d}"
@@ -202,13 +217,21 @@ for p in gecen[:5]:
           f"{p['sol']:4.0%}/{1 - p['sol']:<3.0%} {p['olu_sn']:5d}sn {p['kamera_px']:5.1f}px")
 if not gecen:
     elenme = {k: sum(not c(p) for p in pencereler) for k, c in (
-        ("oyun<%80", lambda p: p["oyun"] >= 0.8), ("tek yari", lambda p: p["yari"] >= 0.2),
+        ("oyun<kapi", lambda p: p["oyun"] >= OYUN_KAPI), ("tek yari", lambda p: p["yari"] >= 0.2),
         ("kamera", lambda p: p["kamera_px"] < 3), ("cakisma", lambda p: not p["cakisma"]))}
     raise SystemExit(f"hicbir pencere kapidan gecmedi; elenme sebepleri: {elenme}")
 
-sec = gecen[0]
+sec, neden = gecen[0], "puanlamanin 1. adayi"
+if a.baslangic is not None:
+    eslesen = [p for p in gecen if abs(p["bas"] - a.baslangic) < a.adim / 2]
+    if not eslesen:
+        raise SystemExit(f"{a.baslangic} sn kapidan gecen pencereler arasinda yok")
+    sec, neden = eslesen[0], a.neden or "elle secildi (gerekce verilmedi)"
+    print(f"elle secim: sira {gecen.index(sec) + 1}/{len(gecen)}, puan {sec['puan']:.2f} "
+          f"(1. aday {gecen[0]['puan']:.2f})")
 json.dump({"video": a.video, "baslangic_sn": sec["bas"], "sure_sn": a.sure, "secim": sec,
-           "cakisma_araliklari": cakisma}, open("data/final_sec.json", "w"), indent=1)
+           "secim_nedeni": neden, "ilk_5": gecen[:5], "cakisma_araliklari": cakisma},
+          open("data/final_sec.json", "w"), indent=1)
 print(f"\nsecilen: {zaman(sec['bas'])} - {zaman(sec['bas'] + a.sure)}  -> data/final_sec.json")
 
 # ---------- 5) zaman cizelgesi ----------
