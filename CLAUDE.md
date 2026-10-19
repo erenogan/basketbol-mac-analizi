@@ -430,13 +430,20 @@ değer değil, **takımlar arası karşılaştırma** olarak sunulmalı.
 
 ## Teslimat planı
 
-### Verilecek
-- `tracked.mp4` — takım renkli kutular, kalıcı ID, hareket izleri
-- `tracks.json` — kare başına id/takım/saha koordinatı (asıl değerli çıktı)
-- Takım ve bölge bazlı **ısı haritaları**
-- Kuşbakışı **minimap** (yan yana görünüm)
-- Toplam/takım bazlı mesafe
-- `LIMITASYONLAR.md`
+### Verilecek — `python scripts/19_teslim.py <video>` → `out/<video>/teslim/`
+- ✅ `tracked.mp4` (= 13_minimap): üst bant (süre, CANLI/ÖLÜ TOP, canlı oyunda
+  birikmiş takım mesafesi), kamera + takım renkli kutular, kuşbakışı tahta.
+  Bant metni Pillow + Segoe UI (cv2.putText Türkçe karakter çizemiyor).
+  Bantta **oyuncu sayısı yok**: fazla kutu yüzünden "6 oyuncu" gösterip yanıltıyordu.
+  Kalıcı ID gösterilmiyor (oyuncu kimliği güvenilir değil).
+- ✅ `tracks.json` (kendi açıklamasıyla: koordinat sistemi, alanlar, ölçülen
+  doğruluk, ölü top aralıkları; `iz` "oyuncu kimliği değil" diye işaretli) ve
+  `tracks.csv` (Türkçe Excel: `;` ayraç, virgül ondalık, BOM'lu UTF-8)
+- ✅ `isi_haritasi.png`, `ozet.json` (mesafe + bölge dağılımı + ölçüm doğruluğu)
+- ✅ `LIMITASYONLAR.md` (depo kökünde, koç için düz dil; pakete kopyalanıyor)
+- ✅ `README.md` (portföy; maç karesi yok — gerçek oyuncular, açık depo)
+- ⏳ Hepsinin `final.mp4` ile yeniden üretimi ve 19'daki OLCUM değerlerinin
+  final ölçümüyle güncellenmesi
 
 ### Verilmeyecek (bilinçli kapsam kararı)
 - Sayı sayımı — top tespit edilemiyor
